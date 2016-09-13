@@ -4,7 +4,9 @@ using PokemonGo.RocketAPI.Extensions;
 using PokemonGo.RocketAPI.HttpClient;
 using POGOProtos.Networking.Envelopes;
 using POGOProtos.Enums;
+
 using System;
+using PokemonGo.RocketAPI.Api.PlayerModels;
 
 namespace PokemonGo.RocketAPI
 {
@@ -35,10 +37,12 @@ namespace PokemonGo.RocketAPI
         internal string ApiUrl { get; set; }
         internal AuthTicket AuthTicket { get; set; }
 
-        internal string SettingsHash { get; set; }
-        internal long InventoryLastUpdateTimestamp { get; set; }
         internal Platform Platform { get; set; }
         internal uint AppVersion { get; set; }
+
+        public Api.InventoryModels.Inventories Inventories;
+        public Api.SettingsModels.ApiSettings ApiSettings;
+        public PlayerProfile PlayerProfile;
 
         public Client(ISettings settings, IApiFailureStrategy apiFailureStrategy)
         {
@@ -57,15 +61,16 @@ namespace PokemonGo.RocketAPI
 
             Player.SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
 
-            InventoryLastUpdateTimestamp = 0;
-
             if (settings.DevicePlatform.Equals("ios", System.StringComparison.Ordinal))
                 Platform = Platform.Ios;
             else
                 Platform = Platform.Android;
 
             AppVersion = 3500;
-            SettingsHash = "";
+
+            Inventories = new Api.InventoryModels.Inventories(this);
+            ApiSettings = new Api.SettingsModels.ApiSettings(this);
+            PlayerProfile = new PlayerProfile(this);
         }
 
         public static long GetCurrentTimeMillis()

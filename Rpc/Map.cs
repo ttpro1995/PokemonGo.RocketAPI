@@ -36,7 +36,7 @@ namespace PokemonGo.RocketAPI.Rpc
 
             var downloadSettingsMessage = new DownloadSettingsMessage
             {
-                Hash = _client.SettingsHash
+                Hash = _client.ApiSettings.Hash
             };
 
             #endregion

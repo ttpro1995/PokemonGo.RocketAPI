@@ -41,7 +41,7 @@ namespace PokemonGo.RocketAPI.Helpers
         {
             var downloadSettingsMessage = new DownloadSettingsMessage()
             {
-                Hash = client.SettingsHash
+                Hash = client.ApiSettings.Hash
             };
             return new Request
             {
@@ -54,7 +54,7 @@ namespace PokemonGo.RocketAPI.Helpers
         {
             var getInventoryMessage = new GetInventoryMessage()
             {
-                LastTimestampMs = client.InventoryLastUpdateTimestamp
+                LastTimestampMs = client.Inventories.LastInventoryUpdate
             };
             return new Request
             {
@@ -129,24 +129,17 @@ namespace PokemonGo.RocketAPI.Helpers
                 switch (requestType)
                 {
                     case RequestType.GetInventory:
-                        //TODO Update inventory
-                        //client..getInventories().updateInventories(GetInventoryResponse.parseFrom(data));
+                        var getInventoryResponse = new GetInventoryResponse();
+                        getInventoryResponse.MergeFrom(data);
 
-                        //var getInventoryResponse = new GetInventoryResponse();
-                        //getInventoryResponse.MergeFrom(data);
-
-                        // Update inventory timestamp
-                        client.InventoryLastUpdateTimestamp = Client.GetCurrentTimeMillis();
-
+                        client.Inventories.UpdateInventories(getInventoryResponse);
+                        
                         break;
                     case RequestType.DownloadSettings:
-                        //TODO Update settings
-                        //api.getSettings().updateSettings(DownloadSettingsResponse.parseFrom(data));
-
-                        // Update settings hash
                         var downloadSettingsResponse = new DownloadSettingsResponse();
                         downloadSettingsResponse.MergeFrom(data);
-                        client.SettingsHash = downloadSettingsResponse.Hash;
+
+                        client.ApiSettings.UpdateSettings(downloadSettingsResponse);
 
                         break;
                     default:
